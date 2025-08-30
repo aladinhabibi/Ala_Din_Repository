@@ -15,14 +15,23 @@ class ChatForward extends ChatItem {}
 
 /// Quote of a [ChatItem].
 abstract class ChatItemQuote {
-  const ChatItemQuote({
-    required this.original,
-    required this.at,
-  });
+  const ChatItemQuote({required this.original, required this.at});
 
   /// Constructs a [ChatItemQuote] from the provided [item].
   factory ChatItemQuote.from(ChatItem item) {
-    throw UnimplementedError('Implement me');
+    final now = DateTime.now();
+
+    if (item is ChatMessage) {
+      return ChatMessageQuote(original: item, at: now);
+    } else if (item is ChatCall) {
+      return ChatCallQuote(original: item, at: now);
+    } else if (item is ChatInfo) {
+      return ChatInfoQuote(original: item, at: now);
+    } else if (item is ChatForward) {
+      return ChatForwardQuote(original: item, at: now);
+    } else {
+      throw ArgumentError('Unsupported ChatItem type: ${item.runtimeType}');
+    }
   }
 
   /// Quoted [ChatItem] itself.

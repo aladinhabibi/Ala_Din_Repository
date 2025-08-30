@@ -156,51 +156,80 @@ After completing everything above, you should be able to answer (and understand 
 
 
 
-[`Future`]: https://api.dart.dev/stable/dart-async/Future-class.html
-[`HttpServer`]: https://api.dart.dev/stable/dart-io/HttpServer-class.html
-[`Isolate`]: https://api.dart.dev/stable/dart-isolate/Isolate-class.html
-[`Stream`]: https://api.dart.dev/stable/dart-async/Stream-class.html
-[`Timer`]: https://api.dart.dev/stable/dart-async/Timer-class.html
-[CPU]: https://en.wikipedia.org/wiki/Central_processing_unit
-[CPU-bound]: https://en.wikipedia.org/wiki/CPU-bound
-[Dart]: https://dart.dev
-[I/O-bound]: https://en.wikipedia.org/wiki/I/O_bound
-[OpenMP]: https://en.wikipedia.org/wiki/OpenMP
-[POSIX]: https://en.wikipedia.org/wiki/POSIX
-[pthreads]: https://en.wikipedia.org/wiki/Pthreads
-[SIMD]: https://en.wikipedia.org/wiki/SIMD
+## Answers
 
-[101]: https://en.wikipedia.org/wiki/Computer_multitasking
-[102]: https://en.wikipedia.org/wiki/Server_(computing)
-[103]: https://en.wikipedia.org/wiki/Operating_system
-[104]: https://en.wikipedia.org/wiki/Concurrent_computing
-[105]: https://en.wikipedia.org/wiki/Input/output
-[106]: https://en.wikipedia.org/wiki/Thread_(computing)
-[107]: https://en.wikipedia.org/wiki/Preemption_(computing)
-[108]: https://en.wikipedia.org/wiki/Cooperative_multitasking
-[109]: https://en.wikipedia.org/wiki/Asynchrony_(computer_programming)
-[110]: https://en.wikipedia.org/wiki/Asynchronous_I/O
-[111]: https://en.wikipedia.org/wiki/Event_loop
-[112]: https://en.wikipedia.org/wiki/Futures_and_promises
-[113]: https://en.wikipedia.org/wiki/Coroutine
-[114]: https://en.wikipedia.org/wiki/Multithreading_(computer_architecture)
-[115]: https://en.wikipedia.org/wiki/Parallel_computing
-[121]: https://www.geeksforgeeks.org/thread-in-operating-system
-[122]: https://www.bmc.com/blogs/asynchronous-programming
-[123]: https://www.datamyte.com/synchronous-vs-asynchronous
-[124]: https://medium.com/nerd-for-tech/tasks-scheduling-in-os-2c1f99e9dc05
-[125]: https://nickymeuleman.netlify.app/garden/concurrent-vs-parallel
-[126]: https://www.linkedin.com/pulse/concurrency-vs-parallelism-2-sides-same-coin-khaja-shaik-
-[201]: https://en.wikipedia.org/wiki/Async/await
-[202]: https://api.dart.dev/stable/dart-async/dart-async-library.html
-[203]: https://dart.dev/language/async
-[204]: https://dart.dev/codelabs/async-await
-[205]: https://dart.dev/tutorials/language/streams
-[206]: https://dart.dev/articles/libraries/creating-streams
-[207]: https://rahmanfadhil.com/asynchronous-dart
-[208]: https://medium.flutterdevs.com/exploring-asynchronous-programming-in-dart-flutter-25f341af32f
-[301]: https://en.wikipedia.org/wiki/Thread_(computing)#Threads_and_data_synchronization
-[302]: https://en.wikipedia.org/wiki/Message_passing
-[303]: https://en.wikipedia.org/wiki/Lock_(computer_science)
-[304]: https://dart.dev/language/concurrency
-[401]: https://en.wikipedia.org/wiki/Exponential_backoff
+**Q: What is multitasking? Why it exists? How is it used for solving CPU-bound and I/O-bound problems?**
+
+Multitasking is the ability to execute multiple tasks concurrently, making better use of system resources. It exists because single-threaded execution is inefficient - while one task waits for I/O, the CPU sits idle.
+
+For CPU-bound problems (like mathematical calculations), multitasking uses multiple threads/cores to parallelize computation. For I/O-bound problems (like network requests), it allows other tasks to run while waiting for slow operations to complete, preventing the entire program from blocking.
+
+**Q: What is preemptive multitasking? What is cooperative multitasking? Which one is used in Dart?**
+
+Preemptive multitasking: The OS forcibly switches between tasks at regular intervals, ensuring no single task can monopolize the CPU.
+
+Cooperative multitasking: Tasks voluntarily yield control to other tasks. If a task doesn't yield, it can block everything.
+
+Dart uses cooperative multitasking within isolates through its event loop. Tasks must yield control by using `await` or completing synchronously. Between isolates, Dart uses preemptive multitasking managed by the OS.
+
+**Q: What is asynchronous programming and when do we need it? How is it represented in Dart?**
+
+Asynchronous programming allows code to start long-running operations without blocking the current thread. We need it for I/O operations like file reading, network requests, or user interactions.
+
+In Dart, it's represented through:
+- `Future<T>` for single async operations
+- `async`/`await` keywords for writing async code that looks synchronous
+- `Stream<T>` for sequences of async events
+
+**Q: What is a Stream and how this abstraction is useful? Give some real-world examples.**
+
+A Stream represents a sequence of asynchronous events over time. It's useful because many real-world scenarios involve continuous data flow rather than single values.
+
+Real-world examples:
+- User input events (button clicks, keyboard input)
+- File reading in chunks
+- WebSocket connections receiving messages
+- Sensor data (GPS coordinates, accelerometer readings)
+- Database change notifications
+
+**Q: What is a Timer and how this abstraction is useful? Give some real-world examples of using it.**
+
+A Timer allows scheduling code execution after a delay or at regular intervals. It's useful for time-based operations without blocking the main thread.
+
+Real-world examples:
+- Auto-save functionality every few minutes
+- Periodic API polling for updates
+- Animation frame updates
+- Session timeout warnings
+- Debouncing user input (wait for user to stop typing)
+- Retry mechanisms with delays
+
+**Q: How does Dart handle multiple Isolates? How do they communicate? How to share memory?**
+
+Dart isolates are completely isolated from each other - they cannot share memory directly. Each isolate has its own heap and memory space.
+
+Communication happens through message passing:
+- `SendPort` and `ReceivePort` for sending/receiving messages
+- Messages are copied between isolates (serialized/deserialized)
+- Only specific types can be sent (primitives, lists, maps, etc.)
+
+You cannot share memory between isolates - this is by design to avoid synchronization issues.
+
+**Q: How are Isolate.spawn and Isolate.spawnUri different?**
+
+`Isolate.spawn()`: Creates a new isolate running a specific function from the current program. The function must be a top-level function or static method.
+
+`Isolate.spawnUri()`: Creates a new isolate running code from a separate Dart file/script. Useful for running completely separate programs or when you need different entry points.
+
+**Q: What is concurrency vs parallelism? How are both represented in Dart?**
+
+Concurrency: Multiple tasks making progress by interleaving execution (appears simultaneous but may run on single core).
+
+Parallelism: Multiple tasks actually running simultaneously on different cores.
+
+In Dart:
+- Concurrency: Single isolate with async/await, Streams, and event loop
+- Parallelism: Multiple isolates running on different OS threads/cores
+- A single isolate can be concurrent but not parallel
+- Multiple isolates enable true parallelism
+

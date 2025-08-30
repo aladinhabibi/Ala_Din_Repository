@@ -85,12 +85,57 @@ For better understanding of [mixins][21] design, benefits and use-cases, read th
 ## Questions
 
 After completing everything above, you should be able to answer (and understand why) the following questions:
-- Why do you need to extend classes? Name some examples.
-- Can extension be private? Unnamed? Generic?
-- How to resolve naming conflicts when multiple extensions define the same methods?
-- What is reasoning behind mixins? Why would you need them? Provide some examples.
-- Can you add static methods and/or fields to mixins?
-- `class`, `mixin`, or `mixin class`? What are differences? When to use each one?
+
+### Extensions
+
+**Why do you need to extend classes? Name some examples.**
+
+Extensions allow you to add functionality to existing classes without modifying their source code or creating inheritance hierarchies. This is especially useful for:
+- Adding utility methods to built-in types (e.g., `String`, `int`, `DateTime`)
+- Enhancing third-party library classes
+- Creating domain-specific APIs
+- Examples: Adding parsing methods to `String`, date formatting to `DateTime`, validation methods to form inputs
+
+**Can extension be private? Unnamed? Generic?**
+
+- **Private**: Yes, extensions can be private by prefixing with underscore (`extension _PrivateExtension`)
+- **Unnamed**: Yes, you can create unnamed extensions (`extension on String { ... }`)
+- **Generic**: Yes, extensions can be generic (`extension<T> ListExtension<T> on List<T> { ... }`)
+
+**How to resolve naming conflicts when multiple extensions define the same methods?**
+
+Naming conflicts can be resolved by:
+1. Using explicit extension syntax: `ExtensionName(object).method()`
+2. Hiding conflicting extensions: `import 'library.dart' hide ConflictingExtension;`
+3. Using prefixes: `import 'library.dart' as prefix;` then `prefix.ExtensionName(object).method()`
+4. The closest extension in scope takes precedence (local > imported > exported)
+
+### Mixins
+
+**What is reasoning behind mixins? Why would you need them? Provide some examples.**
+
+Mixins solve the "diamond problem" and enable horizontal code reuse across different class hierarchies:
+- Share behavior between unrelated classes
+- Compose functionality without deep inheritance
+- Examples: `Flyable` mixin for birds and airplanes, `Serializable` for data persistence, `Loggable` for debugging capabilities
+
+**Can you add static methods and/or fields to mixins?**
+
+Yes, mixins can have static methods and fields:
+```dart
+mixin MyMixin {
+  static const String staticField = 'value';
+  static void staticMethod() { ... }
+}
+```
+
+**`class`, `mixin`, or `mixin class`? What are differences? When to use each one?**
+
+- **`class`**: Traditional inheritance, can be instantiated, single inheritance
+- **`mixin`**: Cannot be instantiated, designed for composition, can be mixed into multiple classes
+- **`mixin class`**: Can be used both as a class (instantiated, extended) and as a mixin, introduced in Dart 3.0
+
+Use `class` for primary inheritance, `mixin` for shared behavior composition, and `mixin class` when you need both capabilities.
 
 
 

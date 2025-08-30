@@ -1,3 +1,5 @@
+import 'dart:async';
+
 /// Collection of [messages] allowed to be [read].
 class Chat {
   Chat(this.onRead);
@@ -11,11 +13,21 @@ class Chat {
   /// [List] of messages in this [Chat].
   final List<int> messages = List.generate(30, (i) => i);
 
+  Timer? _throttleTimer;
+  int? _pendingMessage;
+
   /// Marks this [Chat] as read until the specified [message].
   void read(int message) {
-    // TODO: [onRead] should be invoked no more than 1 time in a second.
+    _pendingMessage = message;
 
-    onRead(message);
+    if (_throttleTimer == null || !_throttleTimer!.isActive) {
+      _throttleTimer = Timer(Duration(seconds: 1), () {
+        if (_pendingMessage != null) {
+          onRead(_pendingMessage!);
+          _pendingMessage = null;
+        }
+      });
+    }
   }
 }
 

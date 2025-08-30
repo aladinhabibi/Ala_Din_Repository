@@ -66,23 +66,72 @@ After completing everything above, you should be able to answer (and understand 
 - Why may some libraries be unavailable in web or natively?
 - How to check whether [Dart] supports a library on the platform it compiles on?
 
+## Answers
 
+### How Dart compiles to and works on native platforms? In web?
 
+**Native Platforms:**
+- Dart uses **AOT (Ahead-of-Time) compilation** for production builds, compiling Dart code directly to native machine code
+- During development, Dart uses **JIT (Just-in-Time) compilation** with the Dart VM for faster iteration and hot reload
+- Native builds can access platform-specific APIs through libraries like `dart:io` for file system, networking, and process management
+- The compiled code runs directly on the target platform (iOS, Android, Windows, macOS, Linux) without requiring a runtime environment
 
-[`dart:html`]: https://api.flutter.dev/flutter/dart-html/dart-html-library.html
-[`dart:io`]: https://api.dart.dev/stable/dart-io/dart-io-library.html
-[`dart:js`]: https://api.flutter.dev/flutter/dart-js/dart-js-library.html
-[`Date`]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date
-[`DateTime`]: https://api.dart.dev/stable/dart-core/DateTime-class.html
-[Dart]: https://dart.dev
-[HTML]: https://en.wikipedia.org/wiki/HTML
-[I/O]: https://en.wikipedia.org/wiki/Input/output
-[JavaScript]: https://en.wikipedia.org/wiki/JavaScript
+**Web Platform:**
+- Dart compiles to **JavaScript** using the `dart2js` compiler for production builds
+- For development, Dart uses **dartdevc** (Dart development compiler) which provides faster compilation and better debugging
+- Web builds are constrained by browser security models and can only access web APIs through libraries like `dart:html` and `dart:js`
+- The compiled JavaScript runs in the browser's JavaScript engine
 
-[1]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md
-[2]: https://github.com/dart-lang/sdk/issues/44876
-[3]: https://dart.dev/overview
-[4]: https://dart.dev/web
-[5]: https://dart.dev/guides/libraries/create-library-packages#conditionally-importing-and-exporting-library-files
-[6]: https://gpalma.pt/blog/conditional-importing
-[7]: https://mrale.ph/dartvm
+### What is Dart VM? How does it work?
+
+The **Dart VM** is a virtual machine that executes Dart code with the following characteristics:
+
+- **JIT Compilation**: During development, it compiles Dart source code to bytecode and then to optimized machine code at runtime
+- **Garbage Collection**: Manages memory automatically with a generational garbage collector
+- **Isolates**: Provides lightweight, independent execution contexts that don't share memory (similar to threads but safer)
+- **Hot Reload**: Allows code changes to be injected into running applications without losing state
+- **Snapshots**: Can create snapshots of compiled code and application state for faster startup times
+
+The VM works by:
+1. Parsing Dart source code into an Abstract Syntax Tree (AST)
+2. Converting AST to bytecode
+3. Optimizing frequently executed code paths
+4. Managing memory and isolates
+
+### Why may some libraries be unavailable in web or natively?
+
+**Security and Platform Constraints:**
+- **Web**: Browser sandbox restrictions prevent direct file system access, process spawning, or raw socket connections
+- **Native**: Cannot access browser-specific APIs like DOM manipulation or web storage
+
+**Technical Limitations:**
+- **Web**: Some native features have no web equivalent (e.g., direct file I/O, system processes)
+- **Native**: Web APIs don't exist outside browsers (e.g., `dart:html`, `dart:js`)
+
+**Implementation Differences:**
+- Some features work differently across platforms (e.g., `DateTime` microseconds support)
+- Performance characteristics may vary (e.g., JavaScript's single-threaded nature vs native multi-threading)
+
+### How to check whether Dart supports a library on the platform it compiles on?
+
+**Conditional Imports/Exports:**
+```dart
+// Check for dart:io availability (native platforms)
+import 'implementation_stub.dart'
+    if (dart.library.io) 'implementation_io.dart'
+    if (dart.library.html) 'implementation_web.dart';
+```
+
+**Runtime Checks:**
+```dart
+import 'dart:io' if (dart.library.html) 'dart:html';
+
+bool get isWeb => identical(0, 0.0); // Compile-time constant check
+bool get isNative => !isWeb;
+```
+
+**Platform Detection Methods:**
+- Use `dart.library.*` conditions for compile-time platform detection
+- Use `kIsWeb` constant from `package:flutter/foundation.dart` in Flutter apps
+- Check for specific library availability using conditional imports
+- Use platform-specific feature detection rather than platform detection when possible

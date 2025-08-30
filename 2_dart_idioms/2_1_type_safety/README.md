@@ -107,6 +107,15 @@ After completing everything above, you should be able to answer (and understand 
 - What is a [newtype idiom][21] and why is it useful?
 
 
+## Answers
+
+**Why should you be explicit about types in [Dart]?**
+
+Because [Dart] defaults to `dynamic` type when types are omitted, which disables static type checking and loses compile-time error detection benefits.
+
+**What is a [newtype idiom][21] and why is it useful?**
+
+It's creating distinct types that wrap existing types to prevent mixing up values with the same underlying type but different meanings, enabling compile-time safety and constraint enforcement.
 
 
 [Dart]: https://dart.dev

@@ -125,6 +125,52 @@ After completing everything above, you should be able to answer (and understand 
 
 
 
+## Answers
+
+### Benefits of Named Constructors and When to Use Them
+
+**Benefits:**
+1. **Clarity and Intent**: Named constructors provide descriptive names that clearly communicate the purpose and use-case of the constructor (e.g., `Image.network()`, `Image.file()`).
+2. **Multiple Construction Patterns**: Allow creating objects in different ways from the same class without parameter ambiguity.
+3. **Code Organization**: Group related initialization logic together, making the codebase more maintainable.
+4. **Parameter Clarity**: Eliminate confusion when multiple constructors would have similar parameter types.
+
+**When to Use:**
+- When you need multiple ways to create an object with different initialization logic
+- When the default constructor parameters would be ambiguous or unclear
+- When you want to provide convenience constructors for common use cases
+- When different construction methods require different validation or setup logic
+
+### Benefits of Factory Constructors and When to Use Them
+
+**Benefits:**
+1. **Control Over Instance Creation**: Can decide whether to create a new instance or return an existing one (caching, singletons).
+2. **Return Subtypes**: Can return different subtypes of the class based on input parameters.
+3. **Complex Initialization Logic**: Can perform complex operations before deciding what to return.
+4. **Memory Management**: Can implement object pooling or caching strategies to optimize memory usage.
+
+**When to Use:**
+- When implementing caching or singleton patterns
+- When you need to return different subtypes based on parameters
+- When object creation is expensive and you want to reuse instances
+- When you need to perform complex validation or computation before creating an object
+- When implementing abstract factories or builder patterns
+
+### How They Differ
+
+| Aspect | Named Constructor | Factory Constructor |
+|--------|------------------|-------------------|
+| **Instance Creation** | Always creates a new instance | May or may not create a new instance |
+| **Return Type** | Always returns the exact class type | Can return subtypes or cached instances |
+| **Keyword** | No special keyword required | Requires `factory` keyword |
+| **Access to `this`** | Has access to `this` | No access to `this` (cannot use initializer lists) |
+| **Purpose** | Provide alternative initialization paths | Control object creation and lifecycle |
+| **Performance** | Creates new object each time | Can optimize by reusing instances |
+| **Use Case** | Different ways to initialize same type | Caching, pooling, or subtype selection |
+
+
+
+
 [`Image`]: https://api.flutter.dev/flutter/widgets/Image-class.html
 [Dart]: https://dart.dev
 [Flutter]: https://flutter.dev

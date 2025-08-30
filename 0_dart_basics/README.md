@@ -17,13 +17,27 @@ To practice the theory you may pass the [Dart Cheatsheet].
 ## Questions
 
 After completing the steps above, you should be able to answer (and understand why) the following questions:
-- What runtime [Dart] has? Does it use a GC (garbage collector)?
-- What is [Dart] VM? How [Dart] works natively and in a browser, and why?
-- What is JIT and AOT compilation? Which one [Dart] supports?
-- What statically typing means? What is a benefit of using it?
-- What memory model [Dart] has? Is it single-threaded or multiple-threaded?
-- Does [Dart] has asynchronous programming? Parallel programming?
-- Is [Dart] OOP language? Does it have an inheritance?
+
+- **What runtime [Dart] has? Does it use a GC (garbage collector)?**
+  - Dart runs on the Dart VM (native) and compiles to JavaScript for the web. Memory is managed automatically with a generational garbage collector (young/old spaces).
+
+- **What is [Dart] VM? How [Dart] works natively and in a browser, and why?**
+  - Dart VM is a virtual machine that executes Dart with JIT during development (hot reload) and supports AOT-compiled native code in release. In browsers, Dart is compiled to JavaScript (via dart2js/DDC) because browsers don't ship a Dart VM.
+
+- **What is JIT and AOT compilation? Which one [Dart] supports?**
+  - JIT compiles at runtime (fast iteration, slower startup). AOT compiles ahead of time to machine code (fast startup, smaller, predictable). Dart supports both: JIT for dev; AOT for release/native. For web, Dart AOT-compiles to JS for production.
+
+- **What statically typing means? What is a benefit of using it?**
+  - Types are checked at compile time (sound null safety). Benefits: earlier error detection, better tooling/autocomplete, safer refactors, and more optimizable code.
+
+- **What memory model [Dart] has? Is it single-threaded or multiple-threaded?**
+  - Per-isolate heaps with no shared mutable state; isolates communicate via message passing. Each isolate has a single-threaded event loop, but multiple isolates can run in parallel on multiple cores.
+
+- **Does [Dart] have asynchronous programming? Parallel programming?**
+  - Yes: async/await, Futures, and Streams for asynchronous (non-blocking) code. Parallelism via isolates (including Flutter's compute), which can run concurrently across cores.
+
+- **Is [Dart] OOP language? Does it have an inheritance?**
+  - Yes: class-based OOP with single inheritance, mixins, abstract classes, implicit interfaces (implements), and extension methods.
 
 Once you're done, notify your mentor/lead in the appropriate [PR (pull request)][PR] (checkmark this step in [README](../README.md)), and he will examine what you have learned.
 

@@ -178,6 +178,129 @@ After completing everything above, you should be able to answer (and understand 
 
 
 
+## Answers
+
+### What is code generation? Which problems does it solve and how?
+
+**Code generation** is the automated process of creating source code programmatically. It solves the **boilerplate code problem** by automatically generating repetitive, predictable code patterns that would otherwise need to be written manually.
+
+**Problems it solves:**
+- **Reduces boilerplate**: Eliminates repetitive code like serialization methods, data access objects, API clients
+- **Ensures consistency**: Generated code follows the same patterns and conventions
+- **Reduces errors**: Automated generation prevents manual typing mistakes
+- **Saves time**: Developers focus on business logic instead of repetitive code
+- **Maintains synchronization**: Generated code stays in sync with source definitions
+
+**How it works**: Code generators analyze source code (using tools like `analyzer`) and produce new code files based on predefined templates and rules.
+
+### How is code generation represented in Dart?
+
+Code generation in Dart is implemented through the **Builder pattern** using the [`build`] package ecosystem:
+
+1. **Builder class**: Implement the [`Builder`] abstract class to define generation logic
+2. **BuildStep**: Provides access to input files and allows writing output files
+3. **build_runner**: Command-line tool that orchestrates the build process
+4. **build.yaml**: Configuration file that registers builders and defines their behavior
+
+The process follows a **visitor pattern** where builders visit files matching specified extensions and generate corresponding output files.
+
+### How are Builders registered and used in a Dart project?
+
+**Registration process:**
+1. **Create a builder factory function**:
+   ```dart
+   Builder myBuilder(BuilderOptions options) => MyBuilder();
+   ```
+
+2. **Configure in build.yaml**:
+   ```yaml
+   builders:
+     my_builder:
+       import: "package:my_package/my_package.dart"
+       builder_factories: ["myBuilder"]
+       build_extensions: {".dart": []}
+       auto_apply: dependents
+       build_to: source
+   ```
+
+3. **Add as dependency** in pubspec.yaml
+
+**Usage:**
+- Run `dart run build_runner build` to execute the builder
+- The builder processes files matching the specified extensions
+- Generated files are created according to the build configuration
+
+### What is the purpose of `analyzer` and `source_gen` packages? Why do we need them for code generation in Dart?
+
+**`analyzer` package:**
+- Performs **static analysis** of Dart code
+- Parses source code into an Abstract Syntax Tree (AST)
+- Provides APIs to inspect classes, methods, fields, annotations, and types
+- Essential for understanding the structure of source code that generators need to process
+
+**`source_gen` package:**
+- Provides a **developer-friendly framework** on top of lower-level packages
+- Offers **conventions** for human and generated code coexistence
+- Includes utilities like `GeneratorForAnnotation` for annotation-based generation
+- Simplifies the process of writing builders that consume and produce Dart code
+
+**Why we need them:**
+- Raw code generation would require manual parsing and AST manipulation
+- These packages provide tested, reliable abstractions
+- They handle complex scenarios like type resolution, import management, and code formatting
+- Enable focus on generation logic rather than parsing infrastructure
+
+### What are annotations in Dart? How are custom annotations created? How can they be used and why?
+
+**Annotations in Dart** are metadata markers that provide additional information about code elements without affecting runtime behavior.
+
+**Creating custom annotations:**
+```dart
+class MyAnnotation {
+  const MyAnnotation(this.argument);
+  final int argument;
+}
+```
+
+**Usage:**
+```dart
+@MyAnnotation(42)
+class MyClass {}
+```
+
+**How they're used in code generation:**
+- Mark specific classes/methods/fields for processing
+- Pass configuration parameters to generators
+- Allow selective application of code generation
+- Used with `GeneratorForAnnotation` to process only annotated elements
+
+**Why they're important:**
+- **Explicit intent**: Developers explicitly choose what to generate
+- **Configuration**: Pass parameters to customize generation
+- **Selective processing**: Avoid processing unnecessary code
+- **Clean separation**: Clear distinction between generated and manual code
+
+### Which are good practices of code generation in Dart ecosystem?
+
+1. **File naming convention**: Generated files should use `.g.dart` extension (except `freezed` which uses `.freezed.dart`)
+
+2. **Exclude from analysis**: Add generated files to `analysis_options.yaml` exclude list since they're not manually written
+
+3. **Version control**: Commit generated files to VCS for better code navigation in IDEs and browsers
+
+4. **Never manually edit**: Generated files should only be modified by regenerating them, never by hand
+
+5. **Clear documentation**: Include generation headers indicating the file is auto-generated
+
+6. **Incremental builds**: Use `build_runner watch` for development to automatically regenerate on changes
+
+7. **Proper dependencies**: Separate generation-time dependencies from runtime dependencies
+
+8. **Error handling**: Provide clear error messages when generation fails due to invalid input
+
+
+
+
 [`analyzer`]: https://pub.dev/documentation/analyzer
 [`artemis`]: https://pub.dev/packages/artemis
 [`build`]: https://pub.dev/documentation/build

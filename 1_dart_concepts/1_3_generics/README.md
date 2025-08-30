@@ -39,11 +39,69 @@ After completing everything above, you should be able to answer (and understand 
 
 
 
-[Dart]: https://dart.dev
+## Answers
 
-[1]: https://en.wikipedia.org/wiki/Generic_programming
-[2]: https://en.wikipedia.org/wiki/Parametric_polymorphism
-[3]: https://dart.dev/language/generics
-[4]: https://www.darttutorial.org/dart-tutorial/dart-generics
-[5]: https://dart.academy/generics-in-dart-and-flutter
-[6]: https://medium.flutterdevs.com/explore-generics-in-dart-flutter-6dd62b6f3ed4
+**What are generics in [Dart]? Why are they useful?**
+
+Generics in Dart are a way to create reusable code that can work with different types while maintaining type safety. They use type parameters (like `T`, `E`, `K`, `V`) as placeholders for actual types that are specified when the generic is used.
+
+Benefits of generics:
+- **Type Safety**: Catch type-related errors at compile time rather than runtime
+- **Code Reusability**: Write once, use with multiple types
+- **Performance**: Avoid runtime type checks and casting
+- **API Clarity**: Make intentions clear about what types are expected
+- **IntelliSense Support**: Better IDE support with auto-completion and error detection
+
+Example:
+```dart
+// Without generics - not type safe
+class Box {
+  dynamic value;
+  Box(this.value);
+}
+
+// With generics - type safe and reusable
+class Box<T> {
+  T value;
+  Box(this.value);
+}
+
+Box<String> stringBox = Box<String>("Hello");
+Box<int> intBox = Box<int>(42);
+```
+
+**What is a type parameter? How can a type parameter be constrained?**
+
+A type parameter is a placeholder for a type that will be specified later when the generic class, method, or function is used. Type parameters are typically represented by single uppercase letters like `T` (Type), `E` (Element), `K` (Key), `V` (Value).
+
+Type parameters can be constrained using the `extends` keyword to limit which types can be used:
+
+```dart
+// Unconstrained type parameter
+class Container<T> {
+  T item;
+  Container(this.item);
+}
+
+// Constrained type parameter - T must extend Comparable
+T findMax<T extends Comparable<T>>(List<T> items) {
+  if (items.isEmpty) throw ArgumentError('List cannot be empty');
+  
+  T max = items.first;
+  for (T item in items) {
+    if (item.compareTo(max) > 0) {
+      max = item;
+    }
+  }
+  return max;
+}
+
+// Usage examples:
+findMax<int>([1, 5, 3, 9, 2]);
+findMax<String>(['apple', 'banana', 'cherry']); 
+
+Common constraint patterns:
+- `T extends Object`: T must be a non-nullable type
+- `T extends Comparable<T>`: T must be comparable to itself
+- `T extends num`: T must be a number (int or double)
+- `T extends MyBaseClass`: T must extend or implement MyBaseClass

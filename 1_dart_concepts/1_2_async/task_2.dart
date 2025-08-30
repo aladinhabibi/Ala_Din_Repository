@@ -53,8 +53,34 @@ class DisconnectedException implements Exception {}
 
 class Client {
   Future<void> connect(Server server) async {
-    // TODO: Implement backoff re-connecting.
-    //       Data from the [server] should be printed to the console.
+    int backoffSeconds = 1;
+    const int maxBackoffSeconds = 32;
+
+    while (true) {
+      try {
+        print('Attempting to connect to server...');
+        final stream = await server.connect();
+        print('Connected successfully!');
+
+        // Reset backoff on successful connection
+        backoffSeconds = 1;
+
+        await for (final data in stream) {
+          print('Received data: $data');
+        }
+      } on DisconnectedException {
+        print(
+          'Disconnected from server. Retrying in $backoffSeconds seconds...',
+        );
+        await Future.delayed(Duration(seconds: backoffSeconds));
+
+        // Exponential backoff with cap
+        backoffSeconds = (backoffSeconds * 2).clamp(1, maxBackoffSeconds);
+      } catch (e) {
+        print('Unexpected error: $e');
+        await Future.delayed(Duration(seconds: backoffSeconds));
+      }
+    }
   }
 }
 
